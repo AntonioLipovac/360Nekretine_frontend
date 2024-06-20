@@ -25,17 +25,17 @@ export default function Header() {
           <ul className='flex gap-8'>
             <li>
               <Link to='/' className='hidden sm:inline text-white hover:text-orange-500'>
-                Home
+                Početna
               </Link>
             </li>
             <li>
               <Link to='/about' className='hidden sm:inline text-white hover:text-orange-500'>
-                About
+                O nama
               </Link>
             </li>
             <li>
               <Link to='/sign-in' className='text-white hover:text-orange-500'>
-                Sign in
+                Prijava
               </Link>
             </li>
           </ul>

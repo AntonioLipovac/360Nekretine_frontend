@@ -57,7 +57,7 @@ export default function SignIn() {
         />
         <input
           type='password'
-          placeholder='Password'
+          placeholder='Lozinka'
           className='border p-3 rounded-lg text-xl'
           id='password'
           onChange={handleChange}
