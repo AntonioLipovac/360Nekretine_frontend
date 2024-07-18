@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import OAuth from '../components/OAuth';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
@@ -77,7 +78,8 @@ export default function SignUp() {
         >
           {loading ? 'Učitavanje...' : 'Registracija'}
         </button>
-      </form>
+        <OAuth/>
+       </form>
 
       <div className='flex gap-4 mt-8'>
         <p className='text-xl'>Imate račun?</p>
