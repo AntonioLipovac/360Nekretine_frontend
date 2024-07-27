@@ -316,7 +316,7 @@ export default function CreateListing() {
               {uploading ? 'Učitavanje...' : 'Učitaj'}
             </button>
           </div>
-          {files.length === 0 && <p className='text-sm text-gray-600'>Nijedna slika nije odabrana!</p>}
+          {files.length === 0 && <p className='text-sm text-gray-600'>Nije odabrana niti jedna slika!</p>}
           {imageUploadError && <p className='text-red-700 text-sm'>{imageUploadError}</p>}
           {formData.imageUrls.length > 0 && formData.imageUrls.map((url, index) => (
             <div key={url} className='flex justify-between p-3 border items-center'>
