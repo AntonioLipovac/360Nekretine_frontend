@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation } from 'swiper';
-import 'swiper/css/bundle';
+import { Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
 
 export default function Listing() {
   const [listing, setListing] = useState(null);
@@ -40,7 +41,7 @@ export default function Listing() {
       )}
       {listing && !loading && !error && (
         <div>
-          <Swiper navigation modules={[Navigation]}>
+          <Swiper navigation={true} modules={[Navigation]}>
             {listing.imageUrls.map((url, index) => (
               <SwiperSlide key={index}>
                 <div
