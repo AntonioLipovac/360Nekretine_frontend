@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   getDownloadURL,
   getStorage,
@@ -13,6 +13,7 @@ export default function CreateListing() {
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const params = useParams();
+  
   const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
     imageUrls: [],
@@ -28,50 +29,56 @@ export default function CreateListing() {
     parking: false,
     furnished: false,
   });
-  const [imageUploadError, setImageUploadError] = useState(false);
+  const [imageUploadError, setImageUploadError] = useState('');
   const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchListing = async () => {
+  const fetchListing = useCallback(async () => {
+    try {
       const listingId = params.listingId;
       const res = await fetch(`/api/listing/get/${listingId}`);
       const data = await res.json();
-      if (data.success === false) {
-        console.log(data.message);
-        return;
+      if (!data.success) {
+        setError(data.message);
+      } else {
+        setFormData(data);
       }
-      setFormData(data);
-    };
-
-    fetchListing();
+    } catch (error) {
+      setError('Došlo je do greške prilikom preuzimanja podataka.');
+    }
   }, [params.listingId]);
 
-  const handleImageSubmit = (e) => {
-    if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
-      setUploading(true);
-      setImageUploadError(false);
-      const promises = [];
+  useEffect(() => {
+    fetchListing();
+  }, [fetchListing]);
 
-      for (let i = 0; i < files.length; i++) {
-        promises.push(storeImage(files[i]));
+  const handleImageSubmit = async () => {
+    if (files.length === 0) {
+      setImageUploadError('Niste odabrali niti jednu sliku.');
+      return;
+    }
+    if (files.length + formData.imageUrls.length > 6) {
+      setImageUploadError('Možete učitati samo 6 slika po oglasu.');
+      return;
+    }
+
+    setUploading(true);
+    setImageUploadError('');
+    const promises = [];
+
+    try {
+      for (const file of files) {
+        promises.push(storeImage(file));
       }
-      Promise.all(promises)
-        .then((urls) => {
-          setFormData({
-            ...formData,
-            imageUrls: formData.imageUrls.concat(urls),
-          });
-          setImageUploadError(false);
-          setUploading(false);
-        })
-        .catch((err) => {
-          setImageUploadError('Neuspješno učitavanje slika (maksimalno 2 MB po slici)');
-          setUploading(false);
-        });
-    } else {
-      setImageUploadError('Možete učitati samo 6 slika po oglasu');
+      const urls = await Promise.all(promises);
+      setFormData((prevData) => ({
+        ...prevData,
+        imageUrls: [...prevData.imageUrls, ...urls],
+      }));
+    } catch (error) {
+      setImageUploadError('Neuspješno učitavanje slika (maksimalno 2 MB po slici).');
+    } finally {
       setUploading(false);
     }
   };
@@ -102,10 +109,10 @@ export default function CreateListing() {
   };
 
   const handleRemoveImage = (index) => {
-    setFormData({
-      ...formData,
-      imageUrls: formData.imageUrls.filter((_, i) => i !== index),
-    });
+    setFormData((prevData) => ({
+      ...prevData,
+      imageUrls: prevData.imageUrls.filter((_, i) => i !== index),
+    }));
   };
 
   const handleChange = (e) => {
@@ -118,13 +125,17 @@ export default function CreateListing() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.imageUrls.length < 1) {
+      return setError('Morate učitati barem jednu sliku.');
+    }
+    if (+formData.regularPrice < +formData.discountPrice) {
+      return setError('Cijena s popustom mora biti manja od redovne cijene.');
+    }
+
+    setLoading(true);
+    setError('');
+
     try {
-      if (formData.imageUrls.length < 1)
-        return setError('Morate učitati barem jednu sliku');
-      if (+formData.regularPrice < +formData.discountPrice)
-        return setError('Cijena s popustom mora biti manja od redovne cijene');
-      setLoading(true);
-      setError(false);
       const res = await fetch(`/api/listing/update/${params.listingId}`, {
         method: 'POST',
         headers: {
@@ -136,14 +147,15 @@ export default function CreateListing() {
         }),
       });
       const data = await res.json();
-      setLoading(false);
-      if (data.success === false) {
+
+      if (!data.success) {
         setError(data.message);
       } else {
         navigate(`/listing/${data._id}`);
       }
     } catch (error) {
-      setError(error.message);
+      setError('Došlo je do greške prilikom ažuriranja oglasa.');
+    } finally {
       setLoading(false);
     }
   };
@@ -262,12 +274,12 @@ export default function CreateListing() {
             />
           </div>
           <div className='flex flex-col'>
-            <label htmlFor='regularPrice' className='text-lg mb-1'>Redovna cijena (€ / mjesec)</label>
+            <label htmlFor='regularPrice' className='text-lg mb-1'>Redovna cijena</label>
             <input
               type='number'
               id='regularPrice'
               min='50'
-              max='10000000'
+              max='400000000'
               className='p-4 border border-gray-300 rounded-lg text-lg'
               value={formData.regularPrice}
               onChange={handleChange}
@@ -276,12 +288,12 @@ export default function CreateListing() {
           </div>
           {formData.offer && (
             <div className='flex flex-col'>
-              <label htmlFor='discountPrice' className='text-lg mb-1'>Cijena s popustom (€ / mjesec)</label>
+              <label htmlFor='discountPrice' className='text-lg mb-1'>Cijena s popustom</label>
               <input
                 type='number'
                 id='discountPrice'
-                min='0'
-                max='10000000'
+                min='50'
+                max='400000000'
                 className='p-4 border border-gray-300 rounded-lg text-lg'
                 value={formData.discountPrice}
                 onChange={handleChange}
@@ -290,54 +302,52 @@ export default function CreateListing() {
             </div>
           )}
         </div>
-        <div className='flex flex-col gap-4'>
-          <label className='font-semibold text-lg'>
-            Slike:
-            <span className='font-normal text-gray-600 ml-2 text-base'>Prva slika će biti naslovna (maksimalno 6 slika)</span>
-          </label>
-          <div className='flex gap-4 items-center'>
-            <label className='bg-slate-700 text-white p-4 rounded-lg uppercase hover:opacity-95 cursor-pointer'>
-              Odaberite slike
-              <input
-                onChange={(e) => setFiles(e.target.files)}
-                className='hidden'
-                type='file'
-                id='slike'
-                accept='image/*'
-                multiple
-              />
-            </label>
-            <button
-              type='button'
-              disabled={uploading}
-              onClick={handleImageSubmit}
-              className='p-4 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80 text-lg'
-            >
-              {uploading ? 'Učitavanje...' : 'Učitaj'}
-            </button>
+        <div className='flex flex-col'>
+          <label htmlFor='images' className='text-lg mb-1'>Slike</label>
+          <input
+            type='file'
+            id='images'
+            accept='.jpg,.png,.jpeg'
+            className='p-4 border border-gray-300 rounded-lg text-lg'
+            onChange={(e) => setFiles(e.target.files)}
+            multiple
+          />
+          {imageUploadError && <p className='text-red-500'>{imageUploadError}</p>}
+          <button
+            type='button'
+            onClick={handleImageSubmit}
+            disabled={uploading}
+            className='mt-2 py-3 px-6 text-lg font-semibold text-white bg-blue-600 rounded-lg'
+          >
+            {uploading ? 'Učitavanje...' : 'Učitaj slike'}
+          </button>
+          <div className='flex flex-wrap gap-4 mt-4'>
+            {formData.imageUrls.map((url, index) => (
+              <div key={index} className='relative w-32 h-32'>
+                <img
+                  src={url}
+                  alt={`Listing Image ${index + 1}`}
+                  className='object-cover w-full h-full rounded-lg'
+                />
+                <button
+                  type='button'
+                  onClick={() => handleRemoveImage(index)}
+                  className='absolute top-0 right-0 p-1 bg-red-500 text-white rounded-full'
+                >
+                  &times;
+                </button>
+              </div>
+            ))}
           </div>
-          {files.length === 0 && <p className='text-sm text-gray-600'>Nije odabrana niti jedna slika!</p>}
-          {imageUploadError && <p className='text-red-700 text-sm'>{imageUploadError}</p>}
-          {formData.imageUrls.length > 0 && formData.imageUrls.map((url, index) => (
-            <div key={url} className='flex justify-between p-3 border items-center'>
-              <img src={url} alt='slika oglasa' className='w-20 h-20 object-contain rounded-lg' />
-              <button
-                type='button'
-                onClick={() => handleRemoveImage(index)}
-                className='p-3 text-red-700 rounded-lg uppercase hover:opacity-75'
-              >
-                Obriši
-              </button>
-            </div>
-          ))}
         </div>
         <button
-          disabled={loading || uploading}
-          className='p-4 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80 text-lg'
+          type='submit'
+          disabled={loading}
+          className='py-3 px-6 text-lg font-semibold text-white bg-green-600 rounded-lg'
         >
-          {loading ? 'Ažuriranje...' : 'Ažurirajte oglas'}
+          {loading ? 'Ažuriranje...' : 'Ažuriraj oglas'}
         </button>
-        {error && <p className='text-red-700 text-sm'>{error}</p>}
+        {error && <p className='text-red-500 mt-4'>{error}</p>}
       </form>
     </main>
   );
