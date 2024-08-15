@@ -12,7 +12,7 @@ export default function SignIn() {
   const [formData, setFormData] = useState({});
   const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // Dodano: Dobivanje dispatch funkcije
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({
@@ -33,7 +33,6 @@ export default function SignIn() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      console.log(data);
       if (data.success === false) {
         dispatch(signInFailure(data.message));
         return;
@@ -46,44 +45,57 @@ export default function SignIn() {
   };
 
   return (
-    <div className='p-6 max-w-lg mx-auto'>
-      <h1 className='text-4xl text-center font-semibold my-7'>Prijava</h1>
-      
-      <form onSubmit={handleSubmit} className='flex flex-col gap-6'>
-        <input
-          type='email'
-          placeholder='Email'
-          className='border p-3 rounded-lg text-xl'
-          id='email'
-          onChange={handleChange}
-          required
-        />
-        <input
-          type='password'
-          placeholder='Lozinka'
-          className='border p-3 rounded-lg text-xl'
-          id='password'
-          onChange={handleChange}
-          required
-        />
-        <button
-          type='submit'
-          disabled={loading}
-          className='bg-slate-700 text-white p-3 rounded-lg uppercase text-xl hover:opacity-95 disabled:opacity-80'
-        >
-          {loading ? 'Učitavanje...' : 'Prijava'}
-        </button>
-        <OAuth/>
-      </form>
+    <div className='relative py-20 px-6 max-w-3xl mx-auto mt-12'>
+      <div
+        className='bg-blue-950 p-8 rounded-lg shadow-lg relative overflow-hidden'
+        style={{
+          backgroundImage: `url('/putanja-do-slike-pozadine.jpg')`, // Zamijeniti s putanjom do stvarne slike
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+        }}
+      >
+        <div className='bg-blue-950 bg-opacity-80 p-8 rounded-lg'>
+          <h1 className='text-4xl font-semibold mb-6 text-yellow-500 text-center'>
+            Prijava
+          </h1>
 
-      <div className='flex gap-2 mt-8'>
-        <p className='text-xl'>Nemate račun?</p>
-        <Link to='/sign-up' className='text-blue-700 text-xl'>
-          Registrirajte se
-        </Link>
+          <form onSubmit={handleSubmit} className='flex flex-col gap-6'>
+            <input
+              type='email'
+              placeholder='Email'
+              className='border border-yellow-500 p-3 rounded-lg text-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-500'
+              id='email'
+              onChange={handleChange}
+              required
+            />
+            <input
+              type='password'
+              placeholder='Lozinka'
+              className='border border-yellow-500 p-3 rounded-lg text-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-500'
+              id='password'
+              onChange={handleChange}
+              required
+            />
+            <button
+              type='submit'
+              disabled={loading}
+              className='bg-yellow-500 text-white p-3 rounded-lg uppercase text-xl font-semibold hover:bg-yellow-600 disabled:bg-yellow-300 transition'
+            >
+              {loading ? 'Učitavanje...' : 'Prijava'}
+            </button>
+            <OAuth />
+          </form>
+
+          <div className='flex flex-col items-center gap-2 mt-8'>
+            <p className='text-xl text-white'>Nemate račun?</p>
+            <Link to='/sign-up' className='text-yellow-500 text-xl font-semibold underline'>
+              Registrirajte se
+            </Link>
+          </div>
+
+          {error && <p className='text-red-500 mt-5 text-center'>{error}</p>}
+        </div>
       </div>
-
-      {error && <p className='text-red-500 mt-5'>{error}</p>}
     </div>
   );
 }
