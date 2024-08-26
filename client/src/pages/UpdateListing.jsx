@@ -9,7 +9,7 @@ import { app } from '../firebase';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
-export default function CreateListing() {
+export default function UpdateListing() {
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const params = useParams();
@@ -161,193 +161,209 @@ export default function CreateListing() {
   };
 
   return (
-    <main className='p-4 max-w-4xl mx-auto'>
-      <h1 className='text-4xl font-semibold text-center mb-10'>
-        Ažuriraj Oglas
+    <main className='p-6 max-w-4xl mx-auto bg-blue-950 text-white mt-20'>
+      <h1 className='text-3xl font-semibold text-center my-7 text-yellow-500'>
+        Uredi oglas
       </h1>
       <form onSubmit={handleSubmit} className='flex flex-col gap-6'>
-        <input
-          type='text'
-          placeholder='Naziv'
-          className='border p-4 rounded-lg text-lg'
-          id='name'
-          maxLength='62'
-          minLength='10'
-          required
-          onChange={handleChange}
-          value={formData.name}
-        />
-        <textarea
-          placeholder='Opis'
-          className='border p-4 rounded-lg text-lg'
-          id='description'
-          required
-          onChange={handleChange}
-          value={formData.description}
-        />
-        <input
-          type='text'
-          placeholder='Adresa'
-          className='border p-4 rounded-lg text-lg'
-          id='address'
-          required
-          onChange={handleChange}
-          value={formData.address}
-        />
-        <div className='flex gap-4 flex-wrap'>
-          <div className='flex gap-2 items-center'>
-            <input
-              type='radio'
-              id='prodaja'
-              className='w-5 h-5'
-              checked={formData.type === 'prodaja'}
-              onChange={handleChange}
-            />
-            <label htmlFor='prodaja' className='text-lg'>Prodaja</label>
-          </div>
-          <div className='flex gap-2 items-center'>
-            <input
-              type='radio'
-              id='najam'
-              className='w-5 h-5'
-              checked={formData.type === 'najam'}
-              onChange={handleChange}
-            />
-            <label htmlFor='najam' className='text-lg'>Najam</label>
-          </div>
-          <div className='flex gap-2 items-center'>
-            <input
-              type='checkbox'
-              id='parking'
-              className='w-5 h-5'
-              checked={formData.parking}
-              onChange={handleChange}
-            />
-            <label htmlFor='parking' className='text-lg'>Parkirno mjesto</label>
-          </div>
-          <div className='flex gap-2 items-center'>
-            <input
-              type='checkbox'
-              id='furnished'
-              className='w-5 h-5'
-              checked={formData.furnished}
-              onChange={handleChange}
-            />
-            <label htmlFor='furnished' className='text-lg'>Namješteno</label>
-          </div>
-          <div className='flex gap-2 items-center'>
-            <input
-              type='checkbox'
-              id='offer'
-              className='w-5 h-5'
-              checked={formData.offer}
-              onChange={handleChange}
-            />
-            <label htmlFor='offer' className='text-lg'>Ponuda</label>
-          </div>
-        </div>
-        <div className='flex flex-wrap gap-6'>
-          <div className='flex flex-col'>
-            <label htmlFor='bedrooms' className='text-lg mb-1'>Spavaće sobe</label>
-            <input
-              type='number'
-              id='bedrooms'
-              min='1'
-              max='10'
-              className='p-4 border border-gray-300 rounded-lg text-lg'
-              value={formData.bedrooms}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className='flex flex-col'>
-            <label htmlFor='bathrooms' className='text-lg mb-1'>Kupaonice</label>
-            <input
-              type='number'
-              id='bathrooms'
-              min='1'
-              max='10'
-              className='p-4 border border-gray-300 rounded-lg text-lg'
-              value={formData.bathrooms}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className='flex flex-col'>
-            <label htmlFor='regularPrice' className='text-lg mb-1'>Redovna cijena</label>
-            <input
-              type='number'
-              id='regularPrice'
-              min='50'
-              max='400000000'
-              className='p-4 border border-gray-300 rounded-lg text-lg'
-              value={formData.regularPrice}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          {formData.offer && (
-            <div className='flex flex-col'>
-              <label htmlFor='discountPrice' className='text-lg mb-1'>Cijena s popustom</label>
-              <input
-                type='number'
-                id='discountPrice'
-                min='50'
-                max='400000000'
-                className='p-4 border border-gray-300 rounded-lg text-lg'
-                value={formData.discountPrice}
-                onChange={handleChange}
-                required
-              />
-            </div>
-          )}
-        </div>
-        <div className='flex flex-col'>
-          <label htmlFor='images' className='text-lg mb-1'>Slike</label>
+        <div className='flex flex-col gap-4'>
           <input
-            type='file'
-            id='images'
-            accept='.jpg,.png,.jpeg'
-            className='p-4 border border-gray-300 rounded-lg text-lg'
-            onChange={(e) => setFiles(e.target.files)}
-            multiple
+            type='text'
+            placeholder='Naziv'
+            className='border border-yellow-500 p-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-500'
+            id='name'
+            maxLength='62'
+            minLength='10'
+            required
+            onChange={handleChange}
+            value={formData.name}
           />
-          {imageUploadError && <p className='text-red-500'>{imageUploadError}</p>}
-          <button
-            type='button'
-            onClick={handleImageSubmit}
-            disabled={uploading}
-            className='mt-2 py-3 px-6 text-lg font-semibold text-white bg-blue-600 rounded-lg'
-          >
-            {uploading ? 'Učitavanje...' : 'Učitaj slike'}
-          </button>
-          <div className='flex flex-wrap gap-4 mt-4'>
+          <textarea
+            placeholder='Opis'
+            className='border border-yellow-500 p-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-500'
+            id='description'
+            required
+            onChange={handleChange}
+            value={formData.description}
+          />
+          <input
+            type='text'
+            placeholder='Adresa'
+            className='border border-yellow-500 p-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-500'
+            id='address'
+            required
+            onChange={handleChange}
+            value={formData.address}
+          />
+        </div>
+
+        <div className='flex flex-col gap-4'>
+          <div className='flex flex-col md:flex-row gap-4'>
+            <div className='flex items-center gap-2'>
+              <input
+                type='radio'
+                id='prodaja'
+                name='type'
+                className='w-5'
+                onChange={handleChange}
+                checked={formData.type === 'prodaja'}
+              />
+              <label htmlFor='prodaja'>Prodaja</label>
+            </div>
+            <div className='flex items-center gap-2'>
+              <input
+                type='radio'
+                id='najam'
+                name='type'
+                className='w-5'
+                onChange={handleChange}
+                checked={formData.type === 'najam'}
+              />
+              <label htmlFor='najam'>Najam</label>
+            </div>
+          </div>
+
+          <div className='flex flex-col md:flex-row gap-4'>
+            <div className='flex items-center gap-2'>
+              <input
+                type='checkbox'
+                id='parking'
+                className='w-5'
+                onChange={handleChange}
+                checked={formData.parking}
+              />
+              <label htmlFor='parking'>Parkirno mjesto</label>
+            </div>
+            <div className='flex items-center gap-2'>
+              <input
+                type='checkbox'
+                id='furnished'
+                className='w-5'
+                onChange={handleChange}
+                checked={formData.furnished}
+              />
+              <label htmlFor='furnished'>Namješteno</label>
+            </div>
+            <div className='flex items-center gap-2'>
+              <input
+                type='checkbox'
+                id='offer'
+                className='w-5'
+                onChange={handleChange}
+                checked={formData.offer}
+              />
+              <label htmlFor='offer'>Ponuda</label>
+            </div>
+          </div>
+
+          <div className='flex flex-col md:flex-row gap-4'>
+            <div className='flex flex-col md:flex-row items-center gap-4'>
+              <div className='flex items-center gap-2'>
+                <input
+                  type='number'
+                  id='bedrooms'
+                  min='1'
+                  max='10'
+                  required
+                  className='p-3 border border-yellow-500 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-500'
+                  onChange={handleChange}
+                  value={formData.bedrooms}
+                />
+                <label htmlFor='bedrooms'>Sobe</label>
+              </div>
+              <div className='flex items-center gap-2'>
+                <input
+                  type='number'
+                  id='bathrooms'
+                  min='1'
+                  max='10'
+                  required
+                  className='p-3 border border-yellow-500 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-500'
+                  onChange={handleChange}
+                  value={formData.bathrooms}
+                />
+                <label htmlFor='bathrooms'>Kupaonice</label>
+              </div>
+            </div>
+          </div>
+
+          <div className='flex flex-col gap-4'>
+            <div className='flex flex-col md:flex-row gap-4'>
+              <div className='flex flex-col'>
+                <input
+                  type='number'
+                  id='regularPrice'
+                  required
+                  className='p-3 border border-yellow-500 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-500'
+                  onChange={handleChange}
+                  value={formData.regularPrice}
+                />
+                <label htmlFor='regularPrice'>Redovna cijena</label>
+              </div>
+              {formData.offer && (
+                <div className='flex flex-col'>
+                  <input
+                    type='number'
+                    id='discountPrice'
+                    required={formData.offer}
+                    className='p-3 border border-yellow-500 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-500'
+                    onChange={handleChange}
+                    value={formData.discountPrice}
+                  />
+                  <label htmlFor='discountPrice'>Cijena s popustom</label>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className='flex flex-col gap-4'>
+            <label className='text-lg font-semibold'>Dodajte slike</label>
+            <input
+              type='file'
+              id='images'
+              onChange={(e) => setFiles(e.target.files)}
+              multiple
+              accept='.jpg,.png,.jpeg'
+              className='p-3 border border-yellow-500 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-500'
+            />
+            {imageUploadError && <p className='text-red-500'>{imageUploadError}</p>}
+            <button
+              type='button'
+              onClick={handleImageSubmit}
+              className='bg-yellow-500 text-blue-950 p-3 rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500'
+            >
+              {uploading ? 'Učitavanje...' : 'Učitaj slike'}
+            </button>
+          </div>
+
+          <div className='grid grid-cols-2 gap-4 mt-4'>
             {formData.imageUrls.map((url, index) => (
-              <div key={index} className='relative w-32 h-32'>
+              <div key={index} className='relative'>
                 <img
                   src={url}
-                  alt={`Listing Image ${index + 1}`}
-                  className='object-cover w-full h-full rounded-lg'
+                  alt={`Slika ${index + 1}`}
+                  className='w-full h-48 object-cover rounded-lg'
                 />
                 <button
                   type='button'
                   onClick={() => handleRemoveImage(index)}
-                  className='absolute top-0 right-0 p-1 bg-red-500 text-white rounded-full'
+                  className='absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full'
                 >
-                  &times;
+                  Ukloni
                 </button>
               </div>
             ))}
           </div>
         </div>
+        
         <button
           type='submit'
           disabled={loading}
-          className='py-3 px-6 text-lg font-semibold text-white bg-green-600 rounded-lg'
+          className='bg-yellow-500 text-blue-950 p-3 rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500'
         >
-          {loading ? 'Ažuriranje...' : 'Ažuriraj oglas'}
+          {loading ? 'Spremanje...' : 'Spremi promjene'}
         </button>
-        {error && <p className='text-red-500 mt-4'>{error}</p>}
+        {error && <p className='text-red-500'>{error}</p>}
       </form>
     </main>
   );

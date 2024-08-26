@@ -314,7 +314,7 @@ export default function CreateListing() {
               disabled={uploading}
               className='bg-yellow-500 text-blue-950 py-2 px-4 rounded-lg disabled:bg-gray-500'
             >
-              {uploading ? 'Učitavanje...' : 'Pošaljite slike'}
+              {uploading ? 'Učitavanje...' : 'Učitajte slike'}
             </button>
           )}
           <div className='grid grid-cols-3 gap-4'>
