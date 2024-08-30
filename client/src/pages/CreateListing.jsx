@@ -265,7 +265,7 @@ export default function CreateListing() {
                   onChange={handleChange}
                   value={formData.bathrooms}
                 />
-                <label htmlFor='bathrooms'>Kupatila</label>
+                <label htmlFor='bathrooms'>Kupaonice</label>
               </div>
             </div>
 
@@ -281,7 +281,7 @@ export default function CreateListing() {
                   onChange={handleChange}
                   value={formData.regularPrice}
                 />
-                <label htmlFor='regularPrice'>Redovna cijena (EUR)</label>
+                <label htmlFor='regularPrice'>Cijena (EUR)</label>
               </div>
             </div>
           </div>

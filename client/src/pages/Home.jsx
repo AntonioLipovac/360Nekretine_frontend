@@ -60,7 +60,7 @@ export default function Pocetna() {
               Počnite sada i pronađite savršeno mjesto za život ili investiranje!
             </div>
             <Link
-              to={'/pretraga'}
+              to={'/profile'}
               className='text-lg font-bold text-yellow-500 hover:underline underline-offset-4'
             >
               Započnimo...
